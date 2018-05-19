@@ -34,18 +34,13 @@ class Entity(object):
 
     def __call__(self, doc):
         matches = self.keyword_processor.extract_keywords(doc.text, span_info=True)
-        spans = []  # keep spans here to merge them later
         for _, start, end in matches:
             entity = doc.char_span(start, end, label=self.label)
             if entity:
                 for token in entity:
                     token._.set(self._is_entity, True)
-            spans.append(entity)
             # Overwrite doc.ents and add entity – be careful not to replace!
             doc.ents = list(doc.ents) + [entity]
-
-        for span in spans:
-            span.merge()
         return doc
 
     def has_entities(self, tokens):
